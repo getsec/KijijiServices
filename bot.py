@@ -57,7 +57,9 @@ class Bot:
         pword_feild = bot.find_element_by_id('login-password')
         pword_feild.send_keys(self.password)
         bot.find_element_by_xpath('//*[@id="SignInButton"]').click()
+        
         time.sleep(5)
+        print("We have logged in succesfully")
 
     def create_service_post(self, **kwargs):
         bot = self.bot
@@ -71,7 +73,7 @@ class Bot:
         time.sleep(8)
         print(bot.current_url)
         # enter ad title
-        WebDriverWait(bot, 10).until(
+        WebDriverWait(bot, 15).until(
             EC.element_to_be_clickable(
                 (By.XPATH, '//*[@id="postad-title"]'))).send_keys(self.ad_title)
 
@@ -171,7 +173,7 @@ class Bot:
 
 # ad = parse_ad("ad.yaml")
 ad = parse_ad("alex_ad.yaml")
-automate = Bot(headless=False)
+automate = Bot(headless=True)
 automate.login(ad['username'], ad['password'])
 automate.create_service_post(
     ad_title=ad['name'],
@@ -179,4 +181,4 @@ automate.create_service_post(
     address=ad['address'],
     ad_url=ad['create_ad_url'],
     photo="/Users/getty/personal/KijijiReposter/1.jpeg")
-#automate.teardown()
+automate.teardown()
