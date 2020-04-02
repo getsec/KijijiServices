@@ -42,7 +42,7 @@ class Bot:
 
         if self.headless is True:
             options = Options()
-            options.headless = headless
+            options.headless = self.headless
             self.bot = webdriver.Firefox(options=options)
         else:
             self.bot = webdriver.Firefox()
@@ -67,7 +67,9 @@ class Bot:
         self.ad_url = kwargs.get("ad_url")
         self.photo = kwargs.get("photo")
         bot.get(self.ad_url)
-        time.sleep(5)
+        
+        time.sleep(8)
+        print(bot.current_url)
         # enter ad title
         WebDriverWait(bot, 10).until(
             EC.element_to_be_clickable(
