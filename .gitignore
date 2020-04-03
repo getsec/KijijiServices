@@ -5,7 +5,8 @@ __pycache__/
 venv
 # C extensions
 *.so
-
+nohup*
+.nohup*
 # Distribution / packaging
 .Python
 build/
