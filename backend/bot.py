@@ -6,6 +6,7 @@ from selenium.webdriver.support.ui import Select
 from selenium.webdriver.firefox.options import Options
 from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import StaleElementReferenceException
+from huepy import good, bad, info
 import time
 import sys
 import yaml
@@ -28,15 +29,14 @@ def dump_html(html):
 def validate(html, url):
     good_message = "You have successfully posted your ad!"
     if good_message in html:
-        print("Looks like the ad was posted succesfully")
-        print(f"ad URL: {url}")
+        print(good("Ad was posted succesfully"))
+        print(info(f"Ad URL: {url}"))
     else:
-        print("I think we got an error uploading.")
+        print(bad("There was an error posting the ad. Dumping HTML file."))
         dump_html(html)
 
 
 class Bot:
-
     def __init__(self, **kwargs):
         self.headless = kwargs.get("headless", True)
 
@@ -44,8 +44,10 @@ class Bot:
             options = Options()
             options.headless = self.headless
             self.bot = webdriver.Firefox(options=options)
+            print(info(f"Bot Initialized headless"))
         else:
             self.bot = webdriver.Firefox()
+            print(info("Bot initialized."))
 
     def login(self, username, password):
         bot = self.bot
@@ -57,9 +59,10 @@ class Bot:
         pword_feild = bot.find_element_by_id('login-password')
         pword_feild.send_keys(self.password)
         bot.find_element_by_xpath('//*[@id="SignInButton"]').click()
-        
         time.sleep(5)
-        print("We have logged in succesfully")
+        # If we're logged in, the text "Register should not be visible"
+        assert "Register" not in bot.page_source, "Failed to login."
+        print(good(f"Succesfully logged into {self.username}"))
 
     def create_service_post(self, **kwargs):
         bot = self.bot
@@ -71,7 +74,9 @@ class Bot:
         bot.get(self.ad_url)
         
         time.sleep(8)
-        print(bot.current_url)
+        # Check to see if we get in coprrectly 
+        assert 'p-post-ad.html' in bot.current_url
+        
         # enter ad title
         WebDriverWait(bot, 15).until(
             EC.element_to_be_clickable(
@@ -95,7 +100,7 @@ class Bot:
                 evt.preventDefault();
             }, true)
             """)
-        elem = bot.find_element_by_css_selector('input[type=file]').send_keys('/Users/getty/personal/KijijiReposter/1.jpeg')
+        elem = bot.find_element_by_css_selector('input[type=file]').send_keys(self.photo)
         
         time.sleep(15)  # Wait for file to upload
         
@@ -107,7 +112,7 @@ class Bot:
 
         time.sleep(1)
         WebDriverWait(bot, 10).until(EC.element_to_be_clickable((By.XPATH, '//*[@id="MainForm"]/div[10]/button[1]'))).click()
-        print("We've sent the request in!")
+        print(info("Ad has been submitted, running validation."))
         
         # run validate to parse the html source
         validate(bot.page_source, bot.current_url)
@@ -128,9 +133,9 @@ class Bot:
         WebDriverWait(bot, 10).until(EC.element_to_be_clickable((By.XPATH, '//*[@id="MainForm"]/div[10]/button[1]'))).click()
         time.sleep(10) # Wait 10 seconds for page to load once ad is posted
         html = bot.page_source
-        check_for_errors(html)
         url = bot.current_url
-        check_success(html, url)
+        validate(html, url)
+     
 
     def delete_all_ads(self, **kwargs):
         bot = self.bot
@@ -161,24 +166,31 @@ class Bot:
         
     def nuke_ads(self):
         bot = self.bot
-        bot.get('https://www.kijiji.ca/m-my-ads/')
-        elem = bot.find_element_by_xpath('/html/body/div[2]/div[4]/div/div/div/div[4]/ul/li')
-        for i in elem:
-            print(i.text)
+        bot.get('https://www.kijiji.ca/m-my-ads/active')
+        try:
+            
+            elem = bot.find_element_by_xpath('/html/body/div[3]/div[4]/div/div/div/div[4]/ul')
+            for i in elem.find_elements_by_css_selector('li'):
+                if i.text == "Delete":
+                    i.click()
+                    print(info("Deleting an active ad."))
+                    time.sleep(3)
+        except:
+            pass
+                
+        bot.get('https://www.kijiji.ca/m-my-ads/inactive')
+        try:
+            
+            elem = bot.find_element_by_xpath('/html/body/div[3]/div[4]/div/div/div/div[4]/ul')
+            for i in elem.find_elements_by_css_selector('li'):
+                if i.text == "Delete":
+                    i.click()
+                    print(info("Deleting an active ad."))
+                    time.sleep(3)
+        except:
+            pass
 
     def teardown(self):
         bot = self.bot
         bot.quit()
 
-
-# ad = parse_ad("ad.yaml")
-ad = parse_ad("alex_ad.yaml")
-automate = Bot(headless=True)
-automate.login(ad['username'], ad['password'])
-automate.create_service_post(
-    ad_title=ad['name'],
-    ad_desc=ad['description'],
-    address=ad['address'],
-    ad_url=ad['create_ad_url'],
-    photo="/Users/getty/personal/KijijiReposter/1.jpeg")
-automate.teardown()

@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Ads</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <script src="static/bootstrap.bundle.js"></script>
+        <link href="static/bootstrap.min.css" rel="stylesheet" media="screen">
+        </head>
+           <div class="container">
+    <body>
+        
+        <h1 class="display-1">KijijiReposter</h1>
+        <p class="lead">
+            The number one kijiji service reposting service   
+        </p>
+    
+        
+    <div>
+
+
+        <!-- child template -->
+        {% block content %}{% endblock %}
+
+        <!-- errors -->
+        {% if error %}
+            <p class="error"><strong>Error:</strong> {{ error }}</p>
+        {% endif %}
+
+        <!-- messages -->
+        {% for message in get_flashed_messages() %}
+            {{ message }}
+        {% endfor %}
+    </div>
+
+<footer class="page-footer font-small blue pt-4">
+
+  <!-- Footer Links -->
+  <div class="container-fluid text-center text-md-left">
+
+    <!-- Grid row -->
+    <div class="row">
+
+      <!-- Grid column -->
+      <div class="col-md-6 mt-md-0 mt-3">
+
+        <!-- Content -->
+        <h5 class="text-uppercase">Kijiji Reposter</h5>
+        <p>Some useful links maybe?.</p>
+
+      </div>
+      <!-- Grid column -->
+
+      <hr class="clearfix w-100 d-md-none pb-3">
+
+      <!-- Grid column -->
+      <div class="col-md-3 mb-md-0 mb-3">
+
+        <!-- Links -->
+        <h5 class="text-uppercase">Help</h5>
+
+        <ul class="list-unstyled">
+          <li>
+            <a href="/faq">Got questions?</a>
+          </li>
+               <!--  <li>
+            <a href="#!">Link 2</a>
+          </li>
+          <li>
+            <a href="#!">Link 3</a>
+          </li>
+          <li>
+            <a href="#!">Link 4</a>
+          </li>
+        </ul>
+        -->
+      </div>
+      <!-- Grid column
+
+      <!-- Grid column 
+      <div class="col-md-3 mb-md-0 mb-3">
+
+        <!-- Links 
+        <h5 class="text-uppercase">Links</h5>
+
+        <ul class="list-unstyled">
+          <li>
+            <a href="#!">Link 1</a>
+          </li>
+          <li>
+            <a href="#!">Link 2</a>
+          </li>
+          <li>
+            <a href="#!">Link 3</a>
+          </li>
+          <li>
+            <a href="#!">Link 4</a>
+          </li>
+        </ul>
+
+      </div>
+      Grid column 
+-->
+    </div>
+    
+
+  </div>
+  <!-- Footer Links -->
+
+  <!-- Copyright -->
+  <div class="footer-copyright text-center py-3">© 2020 Copyright KijijiRepost.ca:
+    <a href="https://cuck.com/"> cuck.com</a>
+  </div>
+  <!-- Copyright -->
+
+</footer>
+
+  </body>
+  
+</html>
