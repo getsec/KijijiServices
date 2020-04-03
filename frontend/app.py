@@ -60,17 +60,19 @@ def check_ads():
     if request.method == 'POST':
         result = request.form
 
-        items = scan_table_allpages(
-            table_name, 
-            filter_key="uuid", 
-            filter_value=result['email']
-        )
-        email = items[0]['uuid']
-        title = items[0]['ad_title']
-        desc  = items[0]['ad_desc']
+        try:
+            items = scan_table_allpages(
+                table_name, 
+                filter_key="uuid", 
+                filter_value=result['email']
+            )
+            email = items[0]['uuid']
+            title = items[0]['ad_title']
+            desc  = items[0]['ad_desc']
 
-        
-    return render_template("query_output.html", email=email, title=title, desc=desc)
+            return render_template("query_output.html", email=email, title=title, desc=desc)
+        except:
+            return render_template("query_output_empty.html")
     
     
 
