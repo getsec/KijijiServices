@@ -13,12 +13,16 @@ app.IMAGE_UPLOADS = "image_uploads"
 # use decorators to link the function to a url
 @app.route('/')
 def home():
-    return render_template('index.html') 
+    return render_template('faq.html') 
 
 
 @app.route('/ads')
 def ads():
     return render_template('ad.html')
+
+@app.route('/faq')
+def faq():
+    return render_template('faq.html')
 
 @app.route('/post', methods = ['POST', 'GET'])
 def result():

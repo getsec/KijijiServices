@@ -1,0 +1,50 @@
+
+{% extends 'base.html' %}
+{% block content %}
+
+
+<div class="row">
+
+        <div class="col-sm-8 blog-main">
+
+          <div class="blog-post">
+            <h2 class="blog-post-title">How do i use this service?</h2>
+            
+
+            <p>This service allows you to send Kijiji ad information to our database. Once in the database we will repost your ad everyday at 6AM CST to make sure your ad get top rank everyday.</p>
+            <hr>
+            <p>When creating an <a href="/ads">ad</a>, there may be a few feilds that are kind of hard to understand.</p>
+            <blockquote>
+              <p>You might be asking... <strong>Why do you need my credentials?</strong> There is a good explaination for that.</p>
+            </blockquote>
+            <p>We use <em>headless browsing</em>. This allows us to use a browser in an automated fasion and create ads. In essnece, we're using a robot to drive a browser and enter an ad like a human. This is why we need your creds.</p>
+            <p>If you want <em>create a new account</em>. This makes sure I will never get access to any of your personal accounts (make sure to register the account in kijiji and set your phone number and address)</p>
+            <hr>
+            <h2>The Process</h2>
+            <p>Every field here is pretty self exlanitory, please make sure the credentials are correct or else my automation will just fail, and you will never get an add posted</p>
+            <h3>What is the post ad url?!</h3>
+            <p>When you create an ad, there is a specific category in which it resides. Fisrst create an add, and then in the section where you would add the title and descrition. Copy this URL, and only until the category</p>
+            <p>Take this example</p>
+            <pre><code>https://www.kijiji.ca/p-post-ad.html?categoryId=805&adTitle=blah+blah+blah</code></pre>
+            <p>All you need to put in the field is this<p>
+            <pre><code>https://www.kijiji.ca/p-post-ad.html?categoryId=805</code></pre>
+            <p>Don't forget, ads that have pictures get 50% more clicks!</p>
+            <h3>Click <code>submit</code> then we're in!</h3>
+
+          </div><!-- /.blog-post -->
+
+
+
+
+        </div><!-- /.blog-main -->
+
+        <div class="col-sm-3 offset-sm-1 blog-sidebar">
+          <div class="sidebar-module sidebar-module-inset">
+            <h4>Create an <a href="/ads">add?</a></h4>
+            <p>Hey!<em> lets test this puppy out</em></p>
+          </div>
+     
+        </div><!-- /.blog-sidebar -->
+
+      </div>
+{% endblock  %}
