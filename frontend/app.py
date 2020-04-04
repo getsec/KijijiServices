@@ -9,7 +9,11 @@ app.secret_key = "MySuperSecretKey123123123"
 table_name = "my-flask-app-dev"
 app.IMAGE_UPLOADS = "image_uploads"
 
-
+def short(str):
+    for i in range(0, len(str), 64):
+        return str[i:i+64]
+        
+        
 # use decorators to link the function to a url
 @app.route('/')
 def home():
@@ -74,8 +78,10 @@ def check_ads():
             email = items[0]['uuid']
             title = items[0]['ad_title']
             desc  = items[0]['ad_desc']
+            prov  = items[0]['province']
+            city  = items[0]['city']
 
-            return render_template("query_output.html", email=email, title=title, desc=desc)
+            return render_template("query_output.html", email=email, title=title, desc=short(desc) + " ...", city=city, prov=prov)
         except:
             return render_template("query_output_empty.html")
     
