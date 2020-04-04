@@ -33,10 +33,14 @@ def result():
     full_path_to_file = app.IMAGE_UPLOADS + '/' + filename
     if request.method == 'POST':
         result = request.form
+        print(result)
+        province = result['province']
         username = result['email']
         password = result['password']
         ad_title = result['title']
         ad_desc = result['desc']
+        city = result['city']
+    
         category_url = result['category']
         print(category_url)
         col_dict = {
@@ -44,10 +48,11 @@ def result():
             "password": password,
             "ad_title":  ad_title,
             "ad_desc": ad_desc,
+            "city": city,
+            "province": province,
             "photo_path": full_path_to_file,
             "category": category_url
         }
-
         add_item(table_name, col_dict)
         return render_template('ad_submitted.html', errors="lol")
 

@@ -7,11 +7,15 @@ from selenium.webdriver.firefox.options import Options
 from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import StaleElementReferenceException
 from huepy import good, bad, info
+from geopy.geocoders import Nominatim
 import time
 import sys
 import yaml
 
-
+def getgeo(city, province):
+    geolocator = Nominatim(user_agent="specify_your_app_name_here")
+    location = geolocator.geocode(f"{city}, {province}")
+    return location.latitude, location.longitude
 def parse_ad(ad_file):
     try:
         with open(ad_file) as f:
@@ -71,6 +75,16 @@ class Bot:
         self.address = kwargs.get("address")
         self.ad_url = kwargs.get("ad_url")
         self.photo = kwargs.get("photo")
+        self.province = kwargs.get("province")
+        self.city = kwargs.get("city")
+        
+        lat, longy = getgeo(self.city, self.province)
+        
+        url = f"https://www.kijiji.ca/b-{self.city}/l1700287?ll={lat}%2C{longy}&address={self.city}%2C+{self.province}&radius=50.0&dc=true"
+        
+        print(info(f"Going to this url: {url}"))
+        bot.get(url)
+        time.sleep(3)
         bot.get(self.ad_url)
         
         time.sleep(8)
