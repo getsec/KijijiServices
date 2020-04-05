@@ -82,21 +82,19 @@ def handle_region(city, prov, bot):
         EC.element_to_be_clickable(
             (By.XPATH, '//*[@id="downshift-2-input"]'))).send_keys(Keys.ENTER)
 
-    try:
+    print("Looking for apply button")
+    time.sleep(3)
+    button_elements = bot.find_elements_by_class_name('submitButton-2124651659')
+    for i in button_elements:
+        if "Apply" in i.text:
+            print("Clicking {i.text} button")
+            i.click()
         
-        WebDriverWait(bot, 15).until(
-            EC.element_to_be_clickable(
-                (By.XPATH, '/html/body/div[11]/div/div/div/div/div/div[2]/div/div[2]/div/div[2]/button'))).click()
-    except TimeoutException: 
-        WebDriverWait(bot, 15).until(
-            EC.element_to_be_clickable(
-                (By.XPATH, '/html/body/div[10]/div/div/div/div/div/div[2]/div/div[2]/div/div[2]/button'))).click()
-    except TimeoutException:
-        WebDriverWait(bot, 15).until(
-            EC.element_to_be_clickable(
-                (By.XPATH, '/html/body/div[12]/div/div/div/div/div/div[2]/div/div[2]/div/div[2]/button'))).click()
-    except:
-        print("Well, we couldnt find the 'Apply' button when setting the location")
+        
+        
+## CLASS DEFINITION
+        
+        
 class Bot:
     def __init__(self, **kwargs):
         self.headless = kwargs.get("headless", True)
