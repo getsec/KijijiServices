@@ -7,7 +7,7 @@ logging.basicConfig(filename="backend.log",
                             filemode='a',
                             format='%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s',
                             datefmt='%H:%M:%S',
-                            level=logging.DEBUG)
+                            level=logging.INFO)
 
 logging.info("Initialized the backend script")
 
@@ -41,14 +41,15 @@ for ad in all_items:
     # logging.info(f"creating ads for {username}")
     # logging.info(ad)
     # print(info(f"Time over. Running ad creation for {username}"))
-    automate = Bot(headless=True)
-    automate.login(username, password)
-    automate.create_service_post(
-        ad_title=ad_title,
-        ad_desc=ad_desc,
-        province=province,
-        city=city,
-        address="Tanya Cres, Winnipeg MB",
-        ad_url=category,
-        photo=photo)
-    automate.teardown()
+    if province == "MB":
+        automate = Bot(headless=False)
+        automate.login(username, password)
+        automate.create_service_post(
+            ad_title=ad_title,
+            ad_desc=ad_desc,
+            province=province,
+            city=city,
+            address="Tanya Cres, Winnipeg MB",
+            ad_url=category,
+            photo=photo)
+        automate.teardown()
