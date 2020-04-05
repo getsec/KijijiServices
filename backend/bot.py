@@ -52,6 +52,8 @@ def get_url_by_city(city):
 def validate(html, url, bot):
     good_message = "You have successfully posted your ad!"
     if good_message in html:
+        logging.info("Ad was created succesfully")
+        logging.info(f"Ad URL: {url}")
         print(good("Ad was posted succesfully"))
         print(info(f"Ad URL: {url}"))
     else:
@@ -155,18 +157,20 @@ class Bot:
         # Check to see if we get in coprrectly 
         assert 'p-post-ad.html' in bot.current_url
         
-        logging.info("Trying to send data to ad title")
+        logging.info(f"[{self.ad_title}] Trying to send data to ad title for {self.username}")
+        
         # enter ad title
         WebDriverWait(bot, 15).until(
             EC.element_to_be_clickable(
                 (By.XPATH, '//*[@id="postad-title"]'))).send_keys(self.ad_title)
-        logging.info("Trying to send data to ad description")
+        logging.info(f"[{self.ad_title}] Trying to send data to ad description for {self.username}")
+        
         # ad desc
         WebDriverWait(bot, 10).until(
             EC.element_to_be_clickable(
                 (By.XPATH, '//*[@id="pstad-descrptn"]'))).send_keys(self.ad_desc)
         
-        logging.info("Trying to send data to ad address")
+        logging.info(f"[{self.ad_title}] Trying to send data to ad address for {self.username}")
         # ad address
         WebDriverWait(bot, 10).until(
             EC.element_to_be_clickable(
@@ -180,13 +184,13 @@ class Bot:
                 evt.preventDefault();
             }, true)
             """)
-        logging.info("Trying to send data to ad photo")
+        logging.info(f"[{self.ad_title}] Trying to send data to ad photo for {self.username}")
         elem = bot.find_element_by_css_selector('input[type=file]').send_keys(self.photo)
         
         time.sleep(15)  # Wait for file to upload
         
         # Since the package section has a few popups, we need to use the execute script on the elem
-        logging.info("We're clicking on the basic package.")
+        logging.info(f"[{self.ad_title}] We're clicking on the basic package for {self.username}")
         element = WebDriverWait(bot, 20).until(
             EC.presence_of_element_located(
                 (By.XPATH, '//*[@id="MainForm"]/div[6]/div/div/div/div[1]/div[1]/div[1]/div/button')))
@@ -194,9 +198,9 @@ class Bot:
 
         time.sleep(1)
         
-        logging.info("We're clicking on the submit button.")
+        logging.info(f"[{self.ad_title}] We're clicking on the submit button for {self.username}.")
         WebDriverWait(bot, 10).until(EC.element_to_be_clickable((By.XPATH, '//*[@id="MainForm"]/div[10]/button[1]'))).click()
-        print(info("Ad has been submitted, running validation."))
+        print(info(f"[{self.ad_title}] Ad has been submitted, running validation."))
         
         # run validate to parse the html source
         
@@ -231,5 +235,8 @@ class Bot:
 
     def teardown(self):
         bot = self.bot
+        logging.info(f"Killing the webdriver for session.")
         bot.quit()
+        logging.info(f"The webdriver has been killed.")
+        
 
