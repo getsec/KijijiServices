@@ -13,19 +13,24 @@ from huepy import good, bad, info
 from geopy.geocoders import Nominatim
 import logging
 import time
-logging.basicConfig(filename="backend.log",
-                            filemode='a',
-                            format='%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s',
-                            datefmt='%H:%M:%S',
-                            level=logging.INFO)
-import time
 import sys
 import yaml
+
+
+logging.basicConfig(
+    filename="backend.log",
+    filemode='a',
+    format='%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s',
+    datefmt='%H:%M:%S',
+    level=logging.INFO)
+
 
 def getgeo(city, province):
     geolocator = Nominatim(user_agent="specify_your_app_name_here")
     location = geolocator.geocode(f"{city}, {province}")
     return location.latitude, location.longitude
+
+
 def parse_ad(ad_file):
     try:
         with open(ad_file) as f:
@@ -38,6 +43,8 @@ def dump_html(html):
     with open("dump.html", 'w') as f:
         f.write(html)
         f.close()
+
+
 def get_url_by_city(city):
     url = {
         "calgary": "https://www.kijiji.ca/b-calgary/l1700199?ll=51.044733%2C-114.071883&address=Calgary%2C+AB&radius=50.0&dc=true",
@@ -59,7 +66,7 @@ def validate(html, url, bot):
     else:
         print(bad("There was an error posting the ad. Dumping HTML file."))
         dump_html(html)
-        bot.get_screenshot_as_file('output.png') 
+        bot.get_screenshot_as_file('output.png')
 
 
 def handle_region(city, prov, bot):
@@ -67,19 +74,18 @@ def handle_region(city, prov, bot):
         EC.element_to_be_clickable(
             (By.XPATH, '//*[@id="SearchLocationPicker"]'))).click()
 
-
     WebDriverWait(bot, 15).until(
         EC.element_to_be_clickable(
             (By.XPATH, '//*[@id="downshift-2-input"]'))).click()
-    
+
     for i in range(50):
         bot.find_element_by_xpath('//*[@id="downshift-2-input"]').send_keys(Keys.BACKSPACE)
-    
+
     WebDriverWait(bot, 15).until(
         EC.element_to_be_clickable(
             (By.XPATH, '//*[@id="downshift-2-input"]'))).send_keys(f"{city}, {prov}")
     time.sleep(1)
-    
+
     WebDriverWait(bot, 15).until(
         EC.element_to_be_clickable(
             (By.XPATH, '//*[@id="downshift-2-input"]'))).send_keys(Keys.ENTER)
@@ -91,12 +97,9 @@ def handle_region(city, prov, bot):
         if "Apply" in i.text:
             print("Clicking {i.text} button")
             i.click()
-        
-        
-        
-## CLASS DEFINITION
-        
-        
+
+
+## CLASS DEFINITIO
 class Bot:
     def __init__(self, **kwargs):
         self.headless = kwargs.get("headless", True)
@@ -106,7 +109,7 @@ class Bot:
         firefox_profile.set_preference("geo.enabled", False);
         firefox_profile.set_preference("geo.prompt.testing", True)
         firefox_profile.set_preference("geo.prompt.testing.allow", False)
-        
+
         if self.headless is True:
             options = Options()
             options.headless = self.headless
@@ -147,29 +150,28 @@ class Bot:
         print(info(f"Clicking the right buttons to post an ad in {self.city}, {self.province}"))
         bot.get("https://www.kijiji.ca")
         handle_region(self.city, self.province, bot)
-        
-       
+
         time.sleep(10)
         bot.get(self.ad_url)
-        
+
         time.sleep(8)
         logging.info("Waited for some time, and now we're going to post an ad.")
-        # Check to see if we get in coprrectly 
+        # Check to see if we get in coprrectly
         assert 'p-post-ad.html' in bot.current_url
-        
+
         logging.info(f"[{self.ad_title}] Trying to send data to ad title for {self.username}")
-        
+
         # enter ad title
         WebDriverWait(bot, 15).until(
             EC.element_to_be_clickable(
                 (By.XPATH, '//*[@id="postad-title"]'))).send_keys(self.ad_title)
         logging.info(f"[{self.ad_title}] Trying to send data to ad description for {self.username}")
-        
+
         # ad desc
         WebDriverWait(bot, 10).until(
             EC.element_to_be_clickable(
                 (By.XPATH, '//*[@id="pstad-descrptn"]'))).send_keys(self.ad_desc)
-        
+
         logging.info(f"[{self.ad_title}] Trying to send data to ad address for {self.username}")
         # ad address
         WebDriverWait(bot, 10).until(
@@ -186,9 +188,9 @@ class Bot:
             """)
         logging.info(f"[{self.ad_title}] Trying to send data to ad photo for {self.username}")
         elem = bot.find_element_by_css_selector('input[type=file]').send_keys(self.photo)
-        
+
         time.sleep(15)  # Wait for file to upload
-        
+
         # Since the package section has a few popups, we need to use the execute script on the elem
         logging.info(f"[{self.ad_title}] We're clicking on the basic package for {self.username}")
         element = WebDriverWait(bot, 20).until(
@@ -197,40 +199,44 @@ class Bot:
         bot.execute_script("arguments[0].click();", element)
 
         time.sleep(1)
-        
+
         logging.info(f"[{self.ad_title}] We're clicking on the submit button for {self.username}.")
         WebDriverWait(bot, 10).until(EC.element_to_be_clickable((By.XPATH, '//*[@id="MainForm"]/div[10]/button[1]'))).click()
         print(info(f"[{self.ad_title}] Ad has been submitted, running validation."))
-        
         # run validate to parse the html source
-        
         validate(bot.page_source, bot.current_url, bot)
-        
-        
+
     def nuke_ads(self):
         bot = self.bot
         bot.get('https://www.kijiji.ca/m-my-ads/active')
+        logging.info(f"Checking active ads for {self.username}")
+
         try:
-            
             elem = bot.find_element_by_xpath('/html/body/div[3]/div[4]/div/div/div/div[4]/ul')
             for i in elem.find_elements_by_css_selector('li'):
                 if i.text == "Delete":
                     i.click()
+                    logging.info(f"Deleting an active ad for {self.username}")
                     print(info("Deleting an active ad."))
                     time.sleep(3)
-        except:
+                else:
+                    logging.info(f"No active ads to delete for {self.username}")
+        except Exception:
             pass
-                
+
         bot.get('https://www.kijiji.ca/m-my-ads/inactive')
+        logging.info(f"Checking inactive ads for {self.username}")
         try:
-            
             elem = bot.find_element_by_xpath('/html/body/div[3]/div[4]/div/div/div/div[4]/ul')
             for i in elem.find_elements_by_css_selector('li'):
                 if i.text == "Delete":
                     i.click()
-                    print(info("Deleting an active ad."))
+                    logging.info(f"Deleting an inactive ad for {self.username}")
+                    print(info("Deleting an inactive ad."))
                     time.sleep(3)
-        except:
+                else:
+                    logging.info(f"No inactive ads to delete for {self.username}")
+        except Exception:
             pass
 
     def teardown(self):
@@ -238,5 +244,3 @@ class Bot:
         logging.info(f"Killing the webdriver for session.")
         bot.quit()
         logging.info(f"The webdriver has been killed.")
-        
-

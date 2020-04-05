@@ -1,0 +1,20 @@
+
+{% extends 'base.html' %}
+{% block content %}
+<div class="container-fluid">
+
+    <h1 class="display-4">Administrative Logs</h1>
+    <a href="/logs?length=50">Small</a>
+    <a href="/logs?length=100">Medium</a>
+    <a href="/logs?length=200">Large</a>
+    <a href="/logs?length=1000">Huge</a>
+    <ul class="list-unstyled">
+        {% for log in logs %}
+        {% if log|length > 1 %}
+                <li><p class="font-weight-light"><pre>{{log}}</pre> </p></li>
+            {% endif %}
+        {% endfor %}
+    </ul>
+
+</div>       
+{% endblock  %}
