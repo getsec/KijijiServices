@@ -144,3 +144,4 @@ cython_debug/
 media
 
 image_uploads/**
+.DS_Store
