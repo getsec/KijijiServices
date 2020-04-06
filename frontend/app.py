@@ -147,3 +147,9 @@ def logs():
     logs = data.split('\n')[-num_of_logs:]
 
     return render_template("logs.html", logs=logs)
+
+@app.route('/debug')
+def dump():
+    os.system('cp ../backend/dump.html templates/dump.html')
+    
+    return render_template('dump.html') 
